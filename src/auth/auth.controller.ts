@@ -1,7 +1,8 @@
-import {Controller, Get, Req, Res} from '@nestjs/common';
+import {Controller, Get, Req, Res, UseGuards} from '@nestjs/common';
 import {UsersService} from "../users/users.service";
 import {IGoogleUser} from "../users/dto/google-user";
 import {AuthService} from "./auth.service";
+import {AuthGuard} from "./auth.guard";
 
 @Controller('auth')
 export class AuthController {
@@ -23,10 +24,12 @@ export class AuthController {
             }
         });
     }
+    @UseGuards(AuthGuard)
     @Get('userInfo')
     async getUserInfo(@Req() req, @Res() res) {
         try{
-            res.send(await this.userService.getUser(req.user));
+            console.log('here getting info', req.user);
+            res.send(await this.userService.getUser(req.user.email));
         } catch (e) {
             res.status(400).send(e);
         }

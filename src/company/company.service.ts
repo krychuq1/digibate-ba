@@ -47,7 +47,7 @@ export class CompanyService {
                     });
                     clearInterval(intervalId);
                 }
-            }, 10000);
+            }, 3000);
         });
 
     }

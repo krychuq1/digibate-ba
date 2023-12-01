@@ -7,8 +7,13 @@ export class CompanyController {
     }
     @Get('/scan/:url')
     async googleLogin(@Req() req, @Res() res, @Param('url') url: string) {
-        const response = await this.companyService.scanWebsite(url);
-        res.send({content: response});
+        try{
+            const response = await this.companyService.scanWebsite(url);
+            res.send({content: response});
+        } catch (e) {
+            res.status(400).send({error: 'Something went wrong'});
+        }
+
 
     }
 

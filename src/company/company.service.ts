@@ -4,6 +4,7 @@ import * as process from "process";
 import {TavilyService} from "../tavily/tavily.service";
 import {Repository} from "typeorm";
 import {Company} from "./entities/company.entity";
+import {User} from "../users/entities/user.entity";
 const fs = require('fs')
 
 @Injectable()
@@ -12,7 +13,9 @@ export class CompanyService {
     public thread;
     constructor(private tavilyService: TavilyService,
                 @Inject('COMPANY_REPOSITORY')
-                private companyRepository: Repository<Company>
+                private companyRepository: Repository<Company>,
+                @Inject('USER_REPOSITORY')
+                private userRepository: Repository<User>,
     ) {
         this.openai = new OpenAI({
             apiKey: process.env.OPEN_AI, // defaults to process.env["OPENAI_API_KEY"]
@@ -20,7 +23,28 @@ export class CompanyService {
         // this.scanWebsite('https://norreportbikes.dk/')
         // this.tavilyService.scanCompany('https://norreportbikes.dk/');
     }
-
+    async addCompany(companyDto: CompanyDto, email: string) {
+        const company: Company = new Company();
+        company.companyDescription = companyDto.companyDescription;
+        company.productDescription = companyDto.productDescription;
+        company.fullBusinessName = companyDto.fullBusinessName;
+        company.businessName = companyDto.businessName;
+        company.industry = companyDto.industry;
+        company.email = companyDto.email;
+        company.address = companyDto.address;
+        const companySaved: Company = await this.companyRepository.save(company);
+        console.log(email, '<== username');
+        const user =await this.userRepository.findOne({where: {email}, relations: ['profile', 'companies']})
+        console.log(user, '<== username');
+        if (user) {
+            user.companies = user.companies ?? []; // Initialize if undefined
+            user.companies.push(companySaved);
+            await this.userRepository.save(user); // Save the user with the updated companies
+        } else {
+            // Handle the case when user is not found
+            throw new Error('User not found');
+        }
+    }
     async createThread() {
         if(!this.thread) {
             this.thread = await this.openai.beta.threads.create();

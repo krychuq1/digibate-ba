@@ -9,8 +9,8 @@ export class CompanyController {
     @Get('/scan/:url')
     async googleLogin(@Req() req, @Res() res, @Param('url') url: string) {
         try{
-            // const response = await this.companyService.scanWebsite(url);
-            const response = await this.companyService.scanTest(url);
+            const response = await this.companyService.scanWebsite(url);
+            // const response = await this.companyService.scanTest(url);
             res.send({content: response});
 
         } catch (e) {

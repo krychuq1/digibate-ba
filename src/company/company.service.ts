@@ -5,6 +5,9 @@ import {TavilyService} from "../tavily/tavily.service";
 import {Repository} from "typeorm";
 import {Company} from "./entities/company.entity";
 import {User} from "../users/entities/user.entity";
+import {HttpService} from "@nestjs/axios";
+import {Observable} from "rxjs";
+import {AxiosResponse} from "axios";
 const fs = require('fs')
 
 @Injectable()
@@ -16,10 +19,12 @@ export class CompanyService {
                 private companyRepository: Repository<Company>,
                 @Inject('USER_REPOSITORY')
                 private userRepository: Repository<User>,
+                private readonly httpService: HttpService
     ) {
         this.openai = new OpenAI({
             apiKey: process.env.OPEN_AI, // defaults to process.env["OPENAI_API_KEY"]
         });
+        this.scanWebsiteV2('https://sowasport.pl/')
         // this.scanWebsite('https://norreportbikes.dk/')
         // this.tavilyService.scanCompany('https://norreportbikes.dk/');
     }
@@ -74,23 +79,38 @@ export class CompanyService {
                     const toolCall = runStatus.required_action?.submit_tool_outputs?.tool_calls[0];
                     const args = JSON.parse(toolCall.function.arguments);
                     console.log('calling research service');
-                    this.tavilyService.scanCompany(args.url).subscribe({
-                        next: async (res) => {
-                            console.log('done with research', res.data);
-                            fs.writeFileSync('research_ai.txt', JSON.stringify(res.data.results));
+                    this.scanWebsiteV2(args.url).subscribe({next: async (response:any) => {
+                            const items = response.data;
+                            fs.writeFileSync('research_ai.txt', JSON.stringify(items[0].organicResults));
                             await this.openai.beta.threads.runs.submitToolOutputs(this.thread.id, run.id, {
                                 tool_outputs: [
                                     {
                                         tool_call_id: toolCall?.id,
-                                        output: JSON.stringify(res.data.results),
+                                        output: JSON.stringify(items[0].organicResults),
                                     },
                                 ],
                             });
-                        },
-                        error: (err) => {
-                            reject(err);
+                        }, error: (e) =>{
+                            console.log(e);
                         }
-                    });
+                    })
+                    // this.tavilyService.scanCompany(args.url).subscribe({
+                    //     next: async (res) => {
+                    //         console.log('done with research', res.data);
+                    //         fs.writeFileSync('research_ai.txt', JSON.stringify(res.data.results));
+                    //         await this.openai.beta.threads.runs.submitToolOutputs(this.thread.id, run.id, {
+                    //             tool_outputs: [
+                    //                 {
+                    //                     tool_call_id: toolCall?.id,
+                    //                     output: JSON.stringify(res.data.results),
+                    //                 },
+                    //             ],
+                    //         });
+                    //     },
+                    //     error: (err) => {
+                    //         reject(err);
+                    //     }
+                    // });
                 }
 
                 if (runStatus.status === "completed") {
@@ -116,6 +136,31 @@ export class CompanyService {
         const data = fs.readFileSync('raw_ai.txt', {encoding: 'utf8'});
         console.log(data);
         return this.__parseMarkdownJson(data);
+    }
+
+    scanWebsiteV2(url: string) {
+        return this.httpService.post(`https://api.apify.com/v2/acts/apify~google-search-scraper/run-sync-get-dataset-items?token=${process.env.APIFY}`, {
+                queries: url,
+                maxPagesPerQuery: 1,
+                resultsPerPage: 5
+        });
+        //     .subscribe({next: (response:any) => {
+        //         const items = response.data;
+        //         // Log each non-promoted search result for both queries
+        //         // console.log(items);
+        //         items.forEach((item) => {
+        //             console.log(item.organicResults);
+        //             // const { nonPromotedSearchResults } = item;
+        //             // nonPromotedSearchResults.forEach((result) => {
+        //             //     const { title, url, description } = result;
+        //             //     console.log(`${title}: ${url} --- ${description}`);
+        //             // });
+        //         });
+        //     }, error: (e) =>{
+        //         console.log(e);
+        //     }
+        // })
+
     }
     __parseMarkdownJson(markdownJson: string) {
         try {

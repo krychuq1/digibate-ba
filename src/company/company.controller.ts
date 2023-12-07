@@ -11,12 +11,15 @@ export class CompanyController {
         try{
             const response = await this.companyService.scanWebsite(url);
             // const response = await this.companyService.scanTest(url);
+            // console
             res.send({content: response});
 
         } catch (e) {
             res.status(400).send({error: 'Something went wrong'});
         }
     }
+
+
     @UseGuards(AuthGuard)
     @Post('/')
     async addCompany(@Req() req, @Res() res) {

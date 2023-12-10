@@ -8,6 +8,7 @@ import {User} from "../users/entities/user.entity";
 import {HttpService} from "@nestjs/axios";
 import {Observable} from "rxjs";
 import {AxiosResponse} from "axios";
+import {BrandIdentity} from "./entities/brand-identity.entity";
 const fs = require('fs')
 
 @Injectable()
@@ -19,6 +20,8 @@ export class CompanyService {
                 private companyRepository: Repository<Company>,
                 @Inject('USER_REPOSITORY')
                 private userRepository: Repository<User>,
+                @Inject('BRAND_IDENTITY_REPOSITORY')
+                private brandIdentityRepository: Repository<BrandIdentity>,
                 private readonly httpService: HttpService
     ) {
         this.openai = new OpenAI({
@@ -29,22 +32,28 @@ export class CompanyService {
         // this.tavilyService.scanCompany('https://norreportbikes.dk/');
     }
     async addCompany(companyDto: CompanyDto, email: string) {
-        const company: Company = new Company();
-        company.companyDescription = companyDto.companyDescription;
-        company.productDescription = companyDto.productDescription;
-        company.fullBusinessName = companyDto.fullBusinessName;
-        company.businessName = companyDto.businessName;
-        company.industry = companyDto.industry;
-        company.email = companyDto.email;
-        company.address = companyDto.address;
-        const companySaved: Company = await this.companyRepository.save(company);
-        console.log(email, '<== username');
+
         const user =await this.userRepository.findOne({where: {email}, relations: ['profile', 'companies']})
-        console.log(user, '<== username');
         if (user) {
-            user.companies = user.companies ?? []; // Initialize if undefined
-            user.companies.push(companySaved);
-            await this.userRepository.save(user); // Save the user with the updated companies
+            const brandIdentity = new BrandIdentity();
+            brandIdentity.name = companyDto.brandIdentity.name;
+            brandIdentity.brandAttributes = companyDto.brandIdentity.brandAttributes || [];
+            brandIdentity.toneOfVoice = companyDto.brandIdentity.toneOfVoice || "";
+            brandIdentity.mainColors = [];
+            brandIdentity.secondaryColors = [];
+            brandIdentity.font = '';
+            const brandSaved = await this.brandIdentityRepository.save(brandIdentity);
+            const company: Company = new Company();
+            company.companyDescription = companyDto.companyDescription;
+            company.productDescription = companyDto.productDescription;
+            company.fullBusinessName = companyDto.fullBusinessName;
+            company.businessName = companyDto.businessName;
+            company.industry = companyDto.industry;
+            company.email = companyDto.email;
+            company.address = companyDto.address;
+            company.user = user;
+            company.brandIdentity = brandSaved;
+            const companySaved: Company = await this.companyRepository.save(company);
         } else {
             // Handle the case when user is not found
             throw new Error('User not found');

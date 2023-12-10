@@ -38,6 +38,6 @@ export class UsersService {
 
     }
     async getUser(email: string): Promise<User> {
-        return await this.userRepository.findOne({where: {email}, relations: ['profile', 'companies']})
+        return await this.userRepository.findOne({where: {email}, relations: ['profile', 'companies', 'companies.brandIdentity']})
     }
 }

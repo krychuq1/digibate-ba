@@ -6,4 +6,9 @@ class CompanyDto {
     industry: string;
     email: string;
     address: string;
+    brandIdentity: {
+        name: string;
+        toneOfVoice: string;
+        brandAttributes: string[];
+    }
 }

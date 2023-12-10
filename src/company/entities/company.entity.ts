@@ -1,5 +1,15 @@
-import {BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BeforeInsert,
+    BeforeUpdate,
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToOne,
+    PrimaryGeneratedColumn
+} from "typeorm";
 import {User} from "../../users/entities/user.entity";
+import {BrandIdentity} from "./brand-identity.entity";
 
 @Entity()
 export class Company {
@@ -22,6 +32,11 @@ export class Company {
     email: string;
     @Column()
     address: string;
+    // One-to-one relationship with BrandIdentity
+    @OneToOne(() => BrandIdentity, brandIdentity => brandIdentity.company,  { nullable: true })
+    @JoinColumn() // This decorator is needed to specify the owner side of the relationship
+    brandIdentity: BrandIdentity;
+
     @Column()
     createdAt: Date;
     @Column()

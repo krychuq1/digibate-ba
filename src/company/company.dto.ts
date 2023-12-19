@@ -10,5 +10,6 @@ class CompanyDto {
         name: string;
         toneOfVoice: string;
         brandAttributes: string[];
+        slogan: string;
     }
 }

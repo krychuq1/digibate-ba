@@ -17,7 +17,8 @@ export class BrandIdentity {
 
     @Column("simple-array")
     secondaryColors: string[];
-
+    @Column()
+    slogan: string;
     @Column()
     font: string;
 

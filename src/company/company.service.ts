@@ -42,6 +42,7 @@ export class CompanyService {
             brandIdentity.mainColors = [];
             brandIdentity.secondaryColors = [];
             brandIdentity.font = '';
+            brandIdentity.slogan = companyDto.brandIdentity.slogan || '';
             const brandSaved = await this.brandIdentityRepository.save(brandIdentity);
             const company: Company = new Company();
             company.companyDescription = companyDto.companyDescription;

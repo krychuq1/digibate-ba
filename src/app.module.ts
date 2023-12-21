@@ -6,10 +6,11 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 import { CompanyModule } from './company/company.module';
-import { TavilyModule } from './tavily/tavily.module';
+import { ContentModule } from './content/content.module';
+import { OpenAiModule } from './open-ai/open-ai.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AuthModule, UsersModule, DatabaseModule, CompanyModule, TavilyModule],
+  imports: [ConfigModule.forRoot(), AuthModule, UsersModule, DatabaseModule, CompanyModule, ContentModule, OpenAiModule],
   controllers: [AppController],
   providers: [AppService],
 })

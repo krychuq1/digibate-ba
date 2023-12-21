@@ -16,7 +16,6 @@ export class AuthController {
                 const googleUser: IGoogleUser = axiosResponse.data;
                 // Now pass the extracted googleUser to loginGoogleUser
                 const user = await this.userService.loginGoogleUser(googleUser);
-                console.log(user);
                 res.send(await this.authService.googleToken(user.email));
             },
             error: (err) => {

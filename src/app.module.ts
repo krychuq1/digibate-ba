@@ -8,9 +8,10 @@ import { DatabaseModule } from './database/database.module';
 import { CompanyModule } from './company/company.module';
 import { ContentModule } from './content/content.module';
 import { OpenAiModule } from './open-ai/open-ai.module';
+import { WaitingListModule } from './waiting-list/waiting-list.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AuthModule, UsersModule, DatabaseModule, CompanyModule, ContentModule, OpenAiModule],
+  imports: [ConfigModule.forRoot(), AuthModule, UsersModule, DatabaseModule, CompanyModule, ContentModule, OpenAiModule, WaitingListModule],
   controllers: [AppController],
   providers: [AppService],
 })

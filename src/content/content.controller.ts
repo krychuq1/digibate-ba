@@ -20,8 +20,12 @@ export class ContentController {
             lines = lines.slice(1, -1);
             // Join the remaining lines back into a single string
             const modifiedContent = lines.join('\n');
-            await this.contentService.mailContent(modifiedContent, await this.userService.getUser(req.user.email));
-            res.send({status: 'ok'})
+            this.contentService.mailContent(modifiedContent, await this.userService.getUser(req.user.email))
+                .subscribe({next: (response) => {
+                        res.send({status: 'ok'})
+                    }, error: (error) => {
+                        res.status(400).send({error: 'Something went wrong'});
+                    }});
         } catch (e) {
             // console.log(e);
             res.status(400).send({error: 'Something went wrong'});

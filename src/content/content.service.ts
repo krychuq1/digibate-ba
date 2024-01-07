@@ -16,10 +16,9 @@ export class ContentService {
         const company: Company = await this.companyService.getCompany(user);
         return await this.openAiService.createContent(company);
     }
-    async mailContent(content: string, user: User) {
-        console.log('here');
-        this.httpService.post(process.env.EMAIL_SERVER + 'content-created',
+     mailContent(content: string, user: User) {
+       return this.httpService.post(process.env.EMAIL_SERVER + 'content-created',
             {content, email: user.email, name: user.profile.name})
-            .subscribe({next: (response) => {}, error: (e) => console.log(e)});
+
     }
 }

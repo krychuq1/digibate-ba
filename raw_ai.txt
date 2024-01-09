@@ -1,18 +1,1 @@
-```json
-{
-    "response": {
-        "descriptionOfBusiness": "Zest is a cozy and intimate dining establishment located in Rzeszów, Poland. The restaurant prides itself on a unique atmosphere with open industrial accents, offering a space inspired by the Art Deco style. Zest is designed to provide guests with a sense of comfort and sophistication, catering to a variety of occasions including special events.",
-        "descriptionOfProducts": "author's cocktail cuisine, tapas, set meals composed of diverse small plates",
-        "businessInformation": {
-            "fullBusinessName": "Zest",
-            "businessName": "Zest",
-            "industry": "Restaurant",
-            "email": "info@zest.rzeszow.pl",
-            "address": "35-064 Rzeszów, Rynek 19"
-        },
-        "toneOfVoice": "Intimate and sophisticated atmosphere with a focus on comfort and culinary creativity.",
-        "slogan": "enjoy it more",
-        "brandAttributes": ["welcoming", "sophisticated", "stylish"]
-    }
-}
-```
+The scan did not return relevant information about the website "wornoutgems.com." It seems the scan results are about general health and fitness products from various sellers, not specific to the requested website. Please verify if the URL is correct or if additional information is needed to properly scan this website.

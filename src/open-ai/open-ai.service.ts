@@ -13,12 +13,18 @@ export class OpenAiService {
             apiKey: process.env.OPEN_AI, // defaults to process.env["OPENAI_API_KEY"]
         });
     }
-    async createContent(company: Company): Promise<string> {
+    async createContent(company: Company, postTitle: string, postDescription: string): Promise<string> {
         await this.createThread();
-        const assistantId = 'asst_UEomwygd0izkSMqkH7dv3IlK';
+        // Blog writer v1
+        // const assistantId = 'asst_UEomwygd0izkSMqkH7dv3IlK';
+        const assistantId = 'asst_DYXBsqh8rfLPUQfeY31cHFio';
         await this.openai.beta.threads.messages.create(this.thread.id, {
             role: "user",
-            content: JSON.stringify(company)
+            content: JSON.stringify({
+                companyDetails: JSON.stringify(company),
+                postTitle: postTitle,
+                postDescription: postDescription
+            })
         });
         const run = await this.openai.beta.threads.runs.create(this.thread.id, {
             assistant_id: assistantId,

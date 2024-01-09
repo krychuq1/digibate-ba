@@ -12,9 +12,9 @@ export class ContentService {
                 private companyService: CompanyService) {
     }
 
-    async createContent(user: User) {
+    async createContent(user: User, postTitle: string, postDescription: string) {
         const company: Company = await this.companyService.getCompany(user);
-        return await this.openAiService.createContent(company);
+        return await this.openAiService.createContent(company, postTitle, postDescription);
     }
      mailContent(content: string, user: User) {
        return this.httpService.post(process.env.EMAIL_SERVER + 'content-created',
